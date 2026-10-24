@@ -61,11 +61,21 @@ export async function POST(req: Request) {
     }
 
     // Zero-config default: FormSubmit forwards the message to the address below.
+    // FormSubmit requires a real web origin, so forward the caller's origin as
+    // Referer/Origin (falls back to SITE_URL in the environment).
+    const origin =
+      process.env.SITE_URL ??
+      req.headers.get("origin") ??
+      req.headers.get("referer") ??
+      "http://localhost:3000";
+
     const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(TO)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Origin: origin,
+        Referer: origin,
       },
       body: JSON.stringify({
         name,
@@ -78,9 +88,18 @@ export async function POST(req: Request) {
       }),
     });
 
-    if (!res.ok) {
-      const detail = await res.text();
-      return NextResponse.json({ ok: false, error: `Email service error: ${detail}` }, { status: 502 });
+    const data = (await res.json().catch(() => null)) as
+      | { success?: string; message?: string }
+      | null;
+
+    if (!res.ok || data?.success !== "true") {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: data?.message ?? "Email service rejected the message.",
+        },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({ ok: true });
