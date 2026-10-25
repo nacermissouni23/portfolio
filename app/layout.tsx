@@ -3,9 +3,10 @@ import "./globals.css";
 import Header from "@/components/site/Header";
 
 export const metadata: Metadata = {
-  title: "Nacer Eddine Missouni — AI Engineer",
+  title: "Nacer Eddine Missouni - AI Engineer",
   description:
     "AI Engineer & Data Scientist specializing in agentic AI, LLM-powered applications, and multi-agent systems.",
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({
