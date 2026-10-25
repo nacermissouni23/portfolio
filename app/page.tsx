@@ -117,14 +117,32 @@ export default function HomePage() {
     setStatus("sending");
     setError("");
     try {
-      const res = await fetch("/api/contact", {
+      // Submit directly from the visitor's browser to FormSubmit.
+      // This bypasses Vercel serverless IP blocks by Cloudflare.
+      const res = await fetch("https://formsubmit.co/ajax/missouni23@gmail.com", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.problem,
+          _subject: `Portfolio inquiry from ${form.name}`,
+          _replyto: form.email,
+          _template: "table",
+          _captcha: false,
+        }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string };
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error ?? "Something went wrong. Please try again.");
+
+      const data = (await res.json().catch(() => null)) as {
+        success?: string;
+        message?: string;
+      } | null;
+
+      if (!res.ok || data?.success !== "true") {
+        throw new Error(data?.message ?? "Something went wrong. Please try again.");
       }
       setStatus("sent");
       setForm({ name: "", email: "", problem: "" });
