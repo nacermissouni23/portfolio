@@ -136,7 +136,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1440px] px-6 pb-20 md:px-[127px]">
+    <main className="mx-auto w-full max-w-[1440px] px-6 pb-15 md:px-[127px]">
       <section className="flex flex-col items-center pt-8 text-center sm:pt-12">
         <p className="text-[15px] font-semibold sm:text-[17px]">
           Hey, I&apos;m Nacer Eddine MISSOUNI
