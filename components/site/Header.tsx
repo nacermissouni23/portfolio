@@ -8,8 +8,8 @@ import { GithubIcon, LinkedinIcon, WhatsAppIcon } from "./Icons";
 
 const nav = [
   { label: "Home", href: "/", key: "home" },
-  { label: "Work", href: "/work", key: "work" },
   { label: "About", href: "/#about", key: "about" },
+  { label: "Work", href: "/work", key: "work" },
   { label: "Contact", href: "/#contact", key: "contact" },
 ];
 
@@ -33,32 +33,32 @@ const Squiggle = () => (
 export default function Header() {
   const pathname = usePathname() ?? "/";
   const isWork = pathname.startsWith("/work");
-  const [section, setSection] = useState<"home" | "about" | "contact">("home");
+  const [section, setSection] = useState<"home" | "about" | "work" | "contact">("home");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isWork) return;
     const about = document.getElementById("about");
     const contact = document.getElementById("contact");
-    if (!about && !contact) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            setSection(e.target.id as "about" | "contact");
-          }
-        }
-      },
-      { rootMargin: "-40% 0px -55% 0px" },
-    );
-    if (about) obs.observe(about);
-    if (contact) obs.observe(contact);
-    const onScroll = () => {
-      if (window.scrollY < 200) setSection("home");
+    const update = () => {
+      if (!about || !contact) {
+        if (window.scrollY < 200) setSection("home");
+        return;
+      }
+      const aboutTop = about.offsetTop;
+      const contactTop = contact.offsetTop;
+      const y = window.scrollY;
+      if (y < aboutTop - 120) setSection("home");
+      else if (y < aboutTop + about.offsetHeight - 120) setSection("about");
+      else if (y < contactTop - 120) setSection("work");
+      else setSection("contact");
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
-      obs.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
     };
   }, [isWork, pathname]);
 
@@ -70,7 +70,7 @@ export default function Header() {
         <Link href="/" className="text-[22px] font-bold tracking-tight">
           Nacer
         </Link>
-        <nav className="order-3 flex w-full justify-center gap-8 md:absolute md:left-1/2 md:order-none md:w-auto md:-translate-x-1/2 md:gap-14">
+        <nav className="hidden w-full justify-center gap-8 md:absolute md:left-1/2 md:order-none md:flex md:w-auto md:-translate-x-1/2 md:gap-14">
           {nav.map((n) => (
             <Link
               key={n.label}
@@ -86,6 +86,16 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4 md:gap-6">
+          <button
+            type="button"
+            aria-label="Menu"
+            onClick={() => setMenuOpen((v) => !v)}
+            className="flex h-6 w-6 flex-col items-center justify-center gap-1 md:hidden"
+          >
+            <span className="block h-0.5 w-5 bg-current" />
+            <span className="block h-0.5 w-5 bg-current" />
+            <span className="block h-0.5 w-5 bg-current" />
+          </button>
           {socials.map(({ label, href, Icon }) => (
             <a
               key={label}
@@ -100,6 +110,20 @@ export default function Header() {
           ))}
         </div>
       </div>
+      {menuOpen && (
+        <nav className="flex flex-col gap-4 border-t border-black/10 px-6 py-4 md:hidden">
+          {nav.map((n) => (
+            <Link
+              key={n.label}
+              href={n.href}
+              onClick={() => setMenuOpen(false)}
+              className={cn("text-[16px]", active === n.key ? "font-medium" : "")}
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }
