@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     // Zero-config default: FormSubmit forwards the message to the address below.
     // FormSubmit requires a real web origin, so forward the caller's origin as
     // Referer/Origin (falls back to SITE_URL in the environment).
+    // The origin of the hosted site (used by FormSubmit for domain verification).
     const origin =
       process.env.SITE_URL ??
       req.headers.get("origin") ??
@@ -84,6 +85,9 @@ export async function POST(req: Request) {
         _subject: subject,
         _replyto: email,
         _template: "table",
+        // Tell FormSubmit which domain the submission comes from so it can match
+        // it against the verified domain in your FormSubmit dashboard.
+        _domain: new URL(origin).hostname,
         _captcha: false,
       }),
     });
@@ -93,10 +97,22 @@ export async function POST(req: Request) {
       | null;
 
     if (!res.ok || data?.success !== "true") {
+      const msg = data?.message ?? "Email service rejected the message.";
+      // If FormSubmit requires first-time activation, explain clearly
+      if (msg.toLowerCase().includes("activation") || msg.toLowerCase().includes("activate")) {
+        return NextResponse.json(
+          {
+            ok: false,
+            needsActivation: true,
+            error: "FormSubmit requires one-time confirmation. Please check your email (missouni23@gmail.com) and click 'Activate Form', then submit again.",
+          },
+          { status: 400 },
+        );
+      }
       return NextResponse.json(
         {
           ok: false,
-          error: data?.message ?? "Email service rejected the message.",
+          error: msg,
         },
         { status: 502 },
       );
