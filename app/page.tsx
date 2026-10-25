@@ -344,6 +344,14 @@ export default function HomePage() {
               {status === "sending" ? "sending..." : "send"}
             </StickyButton>
 
+            {/* FormSubmit domain verification for nacermissouni.vercel.app */}
+            <input
+              type="hidden"
+              name="_domain"
+              value="nacermissouni.vercel.app"
+            />
+            <input type="hidden" name="_captcha" value="false" />
+
             {status === "sent" && (
               <p className="text-[13px] font-semibold text-olive">
                 Thanks! Your message has been sent.

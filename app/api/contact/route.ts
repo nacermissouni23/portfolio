@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       process.env.SITE_URL ??
       req.headers.get("origin") ??
       req.headers.get("referer") ??
-      "http://localhost:3000";
+      "https://nacermissouni.vercel.app";
 
     const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(TO)}`, {
       method: "POST",
