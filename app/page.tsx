@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bot, Globe, Megaphone, Calculator, MessageSquareText, Users } from "lucide-react";
+import { Bot, Calculator, MessageSquareText, Users } from "lucide-react";
 import {
   GithubIcon,
   LinkedinIcon,
   WhatsAppIcon,
 } from "@/components/site/Icons";
+import { aiProjects } from "@/lib/data";
 import {
   Eyebrow,
   Pill,
@@ -53,38 +54,13 @@ const services = [
   },
 ];
 
-const projects = [
-  {
-    slug: "almouhasib",
-    Icon: Calculator,
-    title: "Almouhasib",
-    blurb: "Accounting/finance management app for tracking and reporting.",
-    co: "Personal",
-    initial: "P",
-    logo: null,
-    sub: "Full-stack",
-  },
-  {
-    slug: "snoc-complaints",
-    Icon: MessageSquareText,
-    title: "S-NOC Complaints Segmentation",
-    blurb: "Segments telecom complaints to surface recurring issues and root causes.",
-    co: "Djezzy",
-    initial: "DJ",
-    logo: "/logos/djezzy.svg",
-    sub: "NLP & Clustering",
-  },
-  {
-    slug: "hrms",
-    Icon: Users,
-    title: "HRMS",
-    blurb: "Full-stack HR management system for records, leave, and workflows.",
-    co: "Algérie Télécom",
-    initial: "AT",
-    logo: "/logos/algerie-telecom.svg",
-    sub: "Full-stack",
-  },
-];
+const projectIcons: Record<string, typeof Bot> = {
+  almouhasib: Calculator,
+  "snoc-complaints": MessageSquareText,
+  hrms: Users,
+};
+
+const featuredProjects = aiProjects.slice(0, 3);
 
 const steps = [
   {
@@ -259,32 +235,41 @@ export default function HomePage() {
       <section className="pt-20 md:pt-28">
         <SectionTitle>work.</SectionTitle>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {projects.map(({ slug, Icon, title, blurb, co, initial, sub, logo }) => (
-            <Link
-              key={slug}
-              href={`/work/ai/${slug}`}
-              className={`${cardCls} group flex flex-col p-6 transition-transform hover:-translate-y-1`}
-            >
-              <span className="grid h-14 w-14 place-items-center rounded-full border border-olive bg-[#F6EE7C]">
-                <Icon className="h-7 w-7" />
-              </span>
-              <p className="mt-5 text-[10px] font-bold uppercase tracking-wide text-amber">
-                {sub}
-              </p>
-              <h3 className="mt-2 text-[18px] font-bold">{title}</h3>
-              <p className="mt-1 text-[13px] text-ink/70">{blurb}</p>
-              <div className="mt-auto flex items-center gap-2 border-t border-ink/10 pt-4 text-[11px] font-semibold text-olive">
-                {logo ? (
-                  <img src={logo} alt={co} className="h-5 w-5 object-contain" />
-                ) : (
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-olive text-[9px] text-sun">
-                    {initial}
-                  </span>
-                )}
-                {co}
-              </div>
-            </Link>
-          ))}
+          {featuredProjects.map((p) => {
+            const Icon = projectIcons[p.slug] ?? Bot;
+            return (
+              <Link
+                key={p.slug}
+                href={`/work/ai/${p.slug}`}
+                className={`${cardCls} group flex flex-col p-6 transition-transform hover:-translate-y-1`}
+              >
+                <span className="grid h-14 w-14 place-items-center rounded-full border border-olive bg-[#F6EE7C]">
+                  <Icon className="h-7 w-7" />
+                </span>
+                <p className="mt-5 text-[10px] font-bold uppercase tracking-wide text-amber">
+                  {p.eyebrow}
+                </p>
+                <h3 className="mt-2 text-[18px] font-bold">{p.title}</h3>
+                <p className="mt-1 text-[13px] text-ink/70">{p.blurb}</p>
+                <div className="mt-auto flex items-center gap-2 border-t border-ink/10 pt-4 text-[11px] font-semibold text-olive">
+                  {p.logo ? (
+                    <img
+                      src={p.logo}
+                      alt={p.company}
+                      className="h-5 w-5 object-contain"
+                    />
+                  ) : (
+                    <span className="grid h-5 w-5 place-items-center rounded-full bg-olive text-[9px] text-sun">
+                      {p.company === "Personal"
+                        ? "P"
+                        : p.company.slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                  {p.company}
+                </div>
+              </Link>
+            );
+          })}
         </div>
         <StickyButton tone="yellow" to="/work" className="mt-8">
           see all

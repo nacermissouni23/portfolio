@@ -1,7 +1,9 @@
 # Portfolio — Nacer Eddine Missouni (Next.js)
 
-Personal portfolio site: AI, Data Science and Web Dev projects with per-project
-workflow diagrams, plus a working contact form.
+Personal portfolio site: AI, Data Science and Web Dev projects, with workflow
+diagrams for apps/notebooks and live screenshots for websites, plus a working
+contact form. Public projects link to their GitHub repository; deployed web
+projects link to the live site.
 
 ## Run
 
@@ -32,9 +34,10 @@ The home page contact form posts to `/api/contact`, which emails submissions to
 
 ## Workflow diagrams
 
-Project workflow diagrams are pre-rendered to static SVG and stored in
-`public/diagrams/`; there is no runtime diagram rendering. To regenerate after
-editing a diagram, run:
+Notebooks and apps get a pre-rendered workflow diagram stored in
+`public/diagrams/`; there is no runtime diagram rendering. Websites with a live
+deployment show screenshots instead. To regenerate diagrams after editing one,
+run:
 
 ```bash
 node scripts/generate-diagrams.mjs
@@ -43,12 +46,26 @@ node scripts/generate-diagrams.mjs
 This requires the dev-only `mermaid` and `puppeteer-core` dependencies and a
 local Chrome install (see the `executablePath` in the script).
 
+## Screenshots
+
+Websites with a live deployment have desktop and mobile captures in
+`public/screenshots/` (`<slug>-desktop.png` and `<slug>-mobile.png`). After
+changing a live site, recapture them with:
+
+```bash
+node scripts/generate-screenshots.mjs             # all sites
+node scripts/generate-screenshots.mjs al-djisr    # one or more sites
+```
+
+The list of sites, live URLs and GitHub links lives in `lib/data.ts`.
+
 ## Routes
 
 - `/` — home (hero, about, services, work preview, process, contact)
 - `/work` — categories (AI / Data Science / Web Dev)
 - `/work/ai`, `/work/data-science`, `/work/web-dev`
-- `/work/<category>/<slug>` — project detail + workflow diagram
+- `/work/<category>/<slug>` — project detail with live/GitHub links, plus a
+  workflow diagram (notebooks/apps) or screenshots (websites)
 
 ## Portrait image
 
