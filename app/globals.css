@@ -15,8 +15,15 @@
 
 html {
   scroll-behavior: smooth;
-  /* Height of the sticky header, kept up to date by Header.tsx. */
-  scroll-padding-top: var(--header-h, 72px);
+  /* Height of the sticky header. Header.tsx refines the value once mounted;
+     the fallbacks match its rendered height so the first hash scroll is exact. */
+  scroll-padding-top: var(--header-h, 73px);
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: var(--header-h, 97px);
+  }
 }
 
 body {

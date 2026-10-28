@@ -23,7 +23,7 @@ const services = [
   {
     eyebrow: "Intelligent automation",
     title: "AI Agents & Workflow Automation",
-    body: "Build AI-powered workflows that handle complex tasks, connect business tools, and automate processes with minimal manual intervention.",
+    body: "Agents that do the work, with a human approving the risky steps.",
     tags: [
       "AI agents",
       "Multi-step workflows",
@@ -34,7 +34,7 @@ const services = [
   {
     eyebrow: "Knowledge & language",
     title: "LLM-Powered Applications",
-    body: "Turn language models into practical applications that understand documents, retrieve relevant information, and generate useful outputs.",
+    body: "Assistants that read your documents and answer from them.",
     tags: [
       "AI assistants",
       "Document intelligence",
@@ -45,7 +45,7 @@ const services = [
   {
     eyebrow: "Data & prediction",
     title: "Machine Learning & Predictive Systems",
-    body: "Build data-driven systems that identify patterns, make predictions, and support better decisions using machine learning.",
+    body: "Who will leave, what will sell, who to call.",
     tags: [
       "Predictive modeling",
       "Classification",
@@ -67,17 +67,17 @@ const steps = [
   {
     n: "01",
     title: "Audit & Identify",
-    body: "I analyze your current workflow, uncover bottlenecks and flaws, and identify what can be automated, improved, or rebuilt.",
+    body: "Find what is slow or manual.",
   },
   {
     n: "02",
     title: "Prototype & Validate",
-    body: "I build a working prototype quickly so you can test it, share feedback, and help shape the solution before full development.",
+    body: "A working version within days.",
   },
   {
     n: "03",
     title: "Build & Deliver",
-    body: "I turn the validated prototype into a complete solution, refining its functionality, reliability, and integration with your workflow.",
+    body: "Then make it reliable.",
   },
 ];
 

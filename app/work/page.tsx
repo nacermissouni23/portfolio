@@ -15,11 +15,7 @@ export default function WorkPage() {
       <h1 className="mt-10 text-[72px] font-extrabold leading-none tracking-tight title-sun sm:text-[80px]">
         work.
       </h1>
-      <p className="mt-9 max-w-[680px] text-[18px] leading-[30px] sm:text-[20px]">
-        A few things I&apos;ve built, grouped by what they do. Pick a category
-        to dive in.
-      </p>
-      <div className="mt-9 grid gap-6 md:grid-cols-3">
+      <div className="mt-10 grid gap-6 md:grid-cols-3">
         {categories.map((c) => (
           <Link
             key={c.slug}
