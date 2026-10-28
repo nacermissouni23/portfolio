@@ -35,3 +35,6 @@ yarn-error.log*
 
 # old site scaffold (not part of the app)
 /original-assets-tmp/
+
+# Working files (sketches, CV source)
+archis/

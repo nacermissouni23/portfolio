@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Building2, Briefcase, Car, Globe, Heart, Home, Shirt, Store, Utensils, Wrench } from "lucide-react";
 import { ProjectDetail, ProjectNotFound } from "@/components/site/ProjectDetail";
 import { webDevProjects } from "@/lib/data";
@@ -8,14 +9,22 @@ const icons: Record<string, any> = {
   "chifa": Utensils,
   "clinic": Heart,
   "maskulino": Shirt,
-  "profile-agency": Briefcase,
   "real-estate": Home,
-  "saint-raphael": Building2,
   "techmotordz": Wrench,
 };
 
 export function generateStaticParams() {
   return webDevProjects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const p = webDevProjects.find((x) => x.slug === slug);
+  return p ? { title: p.title, description: p.blurb } : { title: "Project not found" };
 }
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -34,7 +43,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       category="Web Dev"
       categoryHref="/work/web-dev"
       Icon={Icon}
-      workflowSrc={`/diagrams/web-dev-${slug}.svg`}
     />
   );
 }

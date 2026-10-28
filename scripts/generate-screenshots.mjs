@@ -11,9 +11,7 @@ const sites = [
   { slug: "chifa", url: "https://chifa-five.vercel.app" },
   { slug: "clinic", url: "https://clinic-nine-kappa.vercel.app" },
   { slug: "maskulino", url: "https://maskulino.vercel.app" },
-  { slug: "profile-agency", url: "https://profile-agency.vercel.app", waitMs: 9000 },
   { slug: "real-estate", url: "https://real-estate-eight-opal.vercel.app" },
-  { slug: "saint-raphael", url: "https://saint-raphael-chi.vercel.app" },
   { slug: "techmotordz", url: "https://techmotordz.vercel.app" },
 ];
 

@@ -18,14 +18,3 @@ export const LinkedinIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const ArrowRight = ({ className }: { className?: string }) => (
-  // Exact Figma asset: arrow_right_in_cards.svg (44x24, #090C59)
-  // eslint-disable-next-line @next/next/no-img-element
-  <img src="/assets/arrow_right_in_cards.svg" alt="" className={className ?? "h-6 w-11"} />
-);
-
-export const Ring = ({ className }: { className?: string }) => (
-  // Exact Figma asset: brush_circle.svg (128x128, #FFDA46)
-  // eslint-disable-next-line @next/next/no-img-element
-  <img src="/assets/brush_circle.svg" alt="" aria-hidden className={className} />
-);

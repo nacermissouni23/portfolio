@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import type { ReactNode, ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,8 @@ type StickyButtonProps = {
   tone?: keyof typeof tones;
   to?: string;
   href?: string;
+  /** Save the linked file instead of opening it. */
+  download?: boolean;
   children: ReactNode;
   className?: string;
   type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
@@ -19,52 +22,41 @@ type StickyButtonProps = {
   disabled?: boolean;
 };
 
+/** A paper face with a solid offset shadow in the tone colour. */
 export function StickyButton({
   tone = "yellow",
   to,
   href,
+  download,
   children,
   className,
   ...rest
 }: StickyButtonProps) {
-  // Exact replica of `button_example.svg` (164x68):
-  // shadow rect x6 y7 w158 h61 rx6 in tone color,
-  // face rect x0.5 y0.5 w157 h60 rx5.5 paper fill + #474306 stroke.
-  const inner = (
-    <span className="relative block h-[68px] w-[164px]">
-      <span
-        aria-hidden
-        className="absolute rounded-[6px]"
-        style={{
-          left: 6, top: 7, width: 158, height: 61, background: tones[tone],
-        }}
-      />
-      <span className="absolute flex items-center justify-center rounded-[5.5px] border border-[#474306] text-[15px] font-medium text-ink"
-        style={{ left: 0.5, top: 0.5, width: 157, height: 60, background: "#FDFCDF" }}
-      >
-        {children}
-      </span>
-    </span>
-  );
   const cls = cn(
-    "inline-block transition-transform hover:-translate-y-0.5",
+    "inline-flex h-[60px] min-w-[148px] items-center justify-center rounded-[6px] border border-[#474306] bg-[#FDFCDF] px-6 text-[15px] font-medium text-ink transition-transform hover:-translate-y-0.5 sm:min-w-[157px]",
     rest.disabled && "cursor-not-allowed opacity-70 hover:translate-y-0",
     className,
   );
+  const style = { boxShadow: `6px 7px 0 ${tones[tone]}` };
   if (to)
     return to.startsWith("#") ? (
-      <a href={to} className={cls}>
-        {inner}
+      <a href={to} className={cls} style={style}>
+        {children}
       </a>
     ) : (
-      <Link href={to} className={cls}>
-        {inner}
+      <Link href={to} className={cls} style={style}>
+        {children}
       </Link>
     );
-  if (href) return <a href={href} className={cls}>{inner}</a>;
+  if (href)
+    return (
+      <a href={href} download={download} className={cls} style={style}>
+        {children}
+      </a>
+    );
   return (
-    <button className={cls} {...rest}>
-      {inner}
+    <button className={cls} style={style} {...rest}>
+      {children}
     </button>
   );
 }
@@ -106,7 +98,7 @@ export function SectionTitle({
   return (
     <h2
       className={cn(
-        "text-[44px] font-extrabold leading-none tracking-tight text-sun sm:text-[56px]",
+        "text-[44px] font-extrabold leading-none tracking-tight title-sun sm:text-[56px]",
         className,
       )}
     >
@@ -115,29 +107,42 @@ export function SectionTitle({
   );
 }
 
+const crumbCls =
+  "items-center gap-2 rounded-full border-2 border-olive px-5 py-2.5 text-[14px]";
+
+/** Full trail on wide screens; a single "back" link on phones. */
 export function Crumbs({
   items,
 }: {
   items: { label: string; to?: string }[];
 }) {
+  const parent = [...items].reverse().find((it) => it.to);
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="inline-flex flex-wrap items-center gap-2 rounded-full border-2 border-olive px-5 py-2.5 text-[14px]"
-    >
-      {items.map((it, i) => (
-        <span key={it.label} className="flex items-center gap-2">
-          {i > 0 && <span className="text-ink/40">/</span>}
-          {it.to ? (
-            <Link href={it.to} className="hover:underline">
-              {it.label}
-            </Link>
-          ) : (
-            <span className="font-bold">{it.label}</span>
-          )}
-        </span>
-      ))}
-    </nav>
+    <>
+      {parent?.to && (
+        <Link href={parent.to} className={`${crumbCls} inline-flex md:hidden`}>
+          <ArrowLeft className="h-4 w-4" />
+          {parent.label}
+        </Link>
+      )}
+      <nav
+        aria-label="Breadcrumb"
+        className={`${crumbCls} hidden flex-wrap md:inline-flex`}
+      >
+        {items.map((it, i) => (
+          <span key={it.label} className="flex items-center gap-2">
+            {i > 0 && <span className="text-ink/40">/</span>}
+            {it.to ? (
+              <Link href={it.to} className="hover:underline">
+                {it.label}
+              </Link>
+            ) : (
+              <span className="font-bold">{it.label}</span>
+            )}
+          </span>
+        ))}
+      </nav>
+    </>
   );
 }
 

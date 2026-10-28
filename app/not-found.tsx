@@ -1,15 +1,17 @@
-import Link from "next/link";
+import { StickyButton } from "@/components/site/Bits";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-ink/60">Oops! Page not found</p>
-        <Link href="/" className="text-amber underline hover:opacity-80">
-          Return to Home
-        </Link>
-      </div>
-    </div>
+    <main className="mx-auto flex w-full max-w-[1440px] flex-col items-start px-6 pb-24 pt-10 md:px-[127px]">
+      <h1 className="text-[72px] font-extrabold leading-none tracking-tight title-sun sm:text-[80px]">
+        404.
+      </h1>
+      <p className="mt-9 text-[18px] leading-[30px] sm:text-[20px]">
+        That page doesn&apos;t exist.
+      </p>
+      <StickyButton tone="yellow" to="/" className="mt-10">
+        back home
+      </StickyButton>
+    </main>
   );
 }

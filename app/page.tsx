@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bot, Calculator, MessageSquareText, Users } from "lucide-react";
+import { type LucideIcon, Bot, Calculator, MessageSquareText, Users } from "lucide-react";
 import {
   GithubIcon,
   LinkedinIcon,
   WhatsAppIcon,
 } from "@/components/site/Icons";
 import { aiProjects } from "@/lib/data";
+import { ProjectGrid } from "@/components/site/ProjectCard";
 import {
   Eyebrow,
   Pill,
@@ -54,7 +55,7 @@ const services = [
   },
 ];
 
-const projectIcons: Record<string, typeof Bot> = {
+const projectIcons: Record<string, LucideIcon> = {
   almouhasib: Calculator,
   "snoc-complaints": MessageSquareText,
   hrms: Users,
@@ -137,11 +138,11 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto w-full max-w-[1440px] px-6 pb-15 md:px-[127px]">
-      <section className="flex flex-col items-center pt-8 text-center sm:pt-12">
+      <section className="flex min-h-[calc(100svh-72px)] flex-col items-center justify-center pb-[14svh] text-center sm:min-h-0 sm:justify-start sm:pb-0 sm:pt-12">
         <p className="text-[15px] font-semibold sm:text-[17px]">
           Hey, I&apos;m Nacer Eddine MISSOUNI
         </p>
-        <h1 className="mx-auto mt-6 max-w-[900px] text-left text-[38px] font-extrabold leading-[1.15] tracking-tight sm:text-[56px] md:text-[64px]">
+        <h1 className="mx-auto mt-6 max-w-[900px] text-[40px] font-extrabold leading-[1.1] tracking-tight sm:text-left sm:text-[56px] sm:leading-[1.15] md:text-[64px]">
           I make a{" "}
           <span className="relative inline-block">
             custom
@@ -156,7 +157,7 @@ export default function HomePage() {
           AI solution for your <span className="text-amber">exact</span>{" "}
           problem.
         </h1>
-        <div className="mt-12 flex flex-wrap justify-center gap-8">
+        <div className="mt-10 flex flex-wrap justify-center gap-5 sm:mt-12 sm:gap-8">
           <StickyButton tone="yellow" to="/work">
             my work
           </StickyButton>
@@ -168,7 +169,7 @@ export default function HomePage() {
 
       <section
         id="about"
-        className="grid scroll-mt-28 items-center gap-10 pt-20 md:grid-cols-[1fr_auto] md:pt-28"
+        className="grid items-center gap-10 pt-20 md:grid-cols-[1fr_auto] md:pt-28"
       >
         <div>
           <SectionTitle>about.</SectionTitle>
@@ -191,7 +192,12 @@ export default function HomePage() {
               <Pill key={t}>{t}</Pill>
             ))}
           </div>
-          <StickyButton tone="orange" className="mt-6">
+          <StickyButton
+            tone="orange"
+            href="/Nacer-Eddine-Missouni-CV.pdf"
+            download
+            className="mt-6"
+          >
             Resume
           </StickyButton>
         </div>
@@ -211,15 +217,18 @@ export default function HomePage() {
         <SectionTitle className="!text-[40px] sm:!text-[52px]">
           what I can build for you.
         </SectionTitle>
-        <div className="mt-8 grid items-stretch gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
           {services.map((s) => (
-            <article key={s.title} className={`${cardCls} p-6`}>
+            <article
+              key={s.title}
+              className={`${cardCls} row-span-4 grid grid-rows-subgrid gap-0 p-6`}
+            >
               <Eyebrow>{s.eyebrow}</Eyebrow>
               <h3 className="mt-3 text-[19px] font-bold leading-[26px]">
                 {s.title}
               </h3>
               <p className="mt-3 text-[14px] leading-6 text-ink/80">{s.body}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap content-start gap-2">
                 {s.tags.map((t) => (
                   <Pill key={t}>{t}</Pill>
                 ))}
@@ -234,42 +243,14 @@ export default function HomePage() {
 
       <section className="pt-20 md:pt-28">
         <SectionTitle>work.</SectionTitle>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {featuredProjects.map((p) => {
-            const Icon = projectIcons[p.slug] ?? Bot;
-            return (
-              <Link
-                key={p.slug}
-                href={`/work/ai/${p.slug}`}
-                className={`${cardCls} group flex flex-col p-6 transition-transform hover:-translate-y-1`}
-              >
-                <span className="grid h-14 w-14 place-items-center rounded-full border border-olive bg-[#F6EE7C]">
-                  <Icon className="h-7 w-7" />
-                </span>
-                <p className="mt-5 text-[10px] font-bold uppercase tracking-wide text-amber">
-                  {p.eyebrow}
-                </p>
-                <h3 className="mt-2 text-[18px] font-bold">{p.title}</h3>
-                <p className="mt-1 text-[13px] text-ink/70">{p.blurb}</p>
-                <div className="mt-auto flex items-center gap-2 border-t border-ink/10 pt-4 text-[11px] font-semibold text-olive">
-                  {p.logo ? (
-                    <img
-                      src={p.logo}
-                      alt={p.company}
-                      className="h-5 w-5 object-contain"
-                    />
-                  ) : (
-                    <span className="grid h-5 w-5 place-items-center rounded-full bg-olive text-[9px] text-sun">
-                      {p.company === "Personal"
-                        ? "P"
-                        : p.company.slice(0, 2).toUpperCase()}
-                    </span>
-                  )}
-                  {p.company}
-                </div>
-              </Link>
-            );
-          })}
+        <div className="mt-8">
+          <ProjectGrid
+            projects={featuredProjects}
+            base="/work/ai"
+            icons={projectIcons}
+            fallback={Bot}
+            tags={false}
+          />
         </div>
         <StickyButton tone="yellow" to="/work" className="mt-8">
           see all
@@ -294,19 +275,19 @@ export default function HomePage() {
         </ol>
       </section>
 
-      <section id="contact" className="scroll-mt-28 pt-16 text-center md:pt-20">
+      <section id="contact" className="pt-16 text-center md:pt-20">
         <span className="mx-auto block w-[61px]">
           <img src="/assets/arrow_down_contact.svg" alt="" aria-hidden className="mx-auto block h-[133px] w-[20px]" />
           <img src="/assets/arrow_down_contact_2nd_element.svg" alt="" aria-hidden className="-mt-4 block h-[42px] w-[61px]" />
         </span>
-        <h2 className="mt-4 text-[34px] font-extrabold leading-tight tracking-tight text-sun sm:text-[48px]">
+        <h2 className="mt-4 text-[34px] font-extrabold leading-tight tracking-tight title-sun sm:text-[48px]">
           have a problem worth solving?
         </h2>
 
         <div className="mx-auto mt-10 grid max-w-[1120px] gap-8 text-left md:grid-cols-[minmax(0,560px)_1fr] md:gap-10">
           <form onSubmit={submit} className={`${cardCls} space-y-3 p-5`}>
             <label className="block">
-              <span className="mb-1 block text-[9px] font-bold uppercase tracking-wide text-amber">
+              <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-amber">
                 Name
               </span>
               <input
@@ -318,7 +299,7 @@ export default function HomePage() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-[9px] font-bold uppercase tracking-wide text-amber">
+              <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-amber">
                 Email
               </span>
               <input
@@ -331,7 +312,7 @@ export default function HomePage() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-[9px] font-bold uppercase tracking-wide text-amber">
+              <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-amber">
                 Problem or question
               </span>
               <textarea
@@ -346,14 +327,6 @@ export default function HomePage() {
             <StickyButton tone="green" type="submit" disabled={status === "sending"}>
               {status === "sending" ? "sending..." : "send"}
             </StickyButton>
-
-            {/* FormSubmit domain verification for nacermissouni.vercel.app */}
-            <input
-              type="hidden"
-              name="_domain"
-              value="nacermissouni.vercel.app"
-            />
-            <input type="hidden" name="_captcha" value="false" />
 
             {status === "sent" && (
               <p className="text-[13px] font-semibold text-olive">

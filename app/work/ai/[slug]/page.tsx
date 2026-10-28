@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Calculator, Code2, FileText, MessageSquareText, Search, Smartphone, TrendingUp, Users } from "lucide-react";
 import { ProjectDetail, ProjectNotFound } from "@/components/site/ProjectDetail";
 import { aiProjects } from "@/lib/data";
@@ -15,6 +16,16 @@ const icons: Record<string, any> = {
 
 export function generateStaticParams() {
   return aiProjects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const p = aiProjects.find((x) => x.slug === slug);
+  return p ? { title: p.title, description: p.blurb } : { title: "Project not found" };
 }
 
 export default async function ProjectDetailPage({
@@ -35,7 +46,6 @@ export default async function ProjectDetailPage({
       category="AI"
       categoryHref="/work/ai"
       Icon={Icon}
-      workflowSrc={`/diagrams/ai-${slug}.svg`}
     />
   );
 }

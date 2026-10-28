@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { GithubIcon, LinkedinIcon, WhatsAppIcon } from "./Icons";
 
@@ -20,13 +20,13 @@ const socials = [
 ];
 
 const Squiggle = () => (
-  // Exact Figma asset: underline_header.svg (50x6, #FFDA46)
+  // Same brush stroke as the hero headline underline, stretched to the label.
   // eslint-disable-next-line @next/next/no-img-element
   <img
-    src="/assets/underline_header.svg"
+    src="/assets/underline_brush.svg"
     alt=""
     aria-hidden
-    className="absolute left-1/2 -bottom-1 h-[6px] w-[50px] -translate-x-1/2"
+    className="pointer-events-none absolute -bottom-1.5 -left-[3%] h-[6px] w-[106%]"
   />
 );
 
@@ -35,6 +35,69 @@ export default function Header() {
   const isWork = pathname.startsWith("/work");
   const [section, setSection] = useState<"home" | "about" | "work" | "contact">("home");
   const [menuOpen, setMenuOpen] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  // Publish the sticky bar height so anchor scrolling can line a section up
+  // exactly under it (see scroll-padding-top in globals.css).
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const setHeight = () =>
+      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+    setHeight();
+    const observer = new ResizeObserver(setHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Smooth-scroll same-page anchors ourselves so the section top always lands
+  // flush under the header, and so repeat clicks on the same hash still work.
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+
+      const anchor = (event.target as Element | null)?.closest?.("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if ((anchor.target && anchor.target !== "_self") || anchor.hasAttribute("download"))
+        return;
+
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname !== window.location.pathname) return;
+      if (!url.hash && url.pathname !== "/") return;
+
+      const target = url.hash
+        ? document.getElementById(decodeURIComponent(url.hash.slice(1)))
+        : document.documentElement;
+      if (!target) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setMenuOpen(false);
+
+      const offset = barRef.current?.offsetHeight ?? 0;
+      const top =
+        target === document.documentElement
+          ? 0
+          : target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: Math.max(0, Math.round(top)), behavior: "smooth" });
+      history.replaceState(null, "", `${url.pathname}${url.hash}`);
+    };
+
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
 
   useEffect(() => {
     if (isWork) return;
@@ -66,7 +129,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-y-3 px-6 py-5 md:px-[97px] md:py-8">
+      <div
+        ref={barRef}
+        className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-y-3 px-6 py-5 md:px-[97px] md:py-8"
+      >
         <Link href="/" className="text-[22px] font-bold tracking-tight">
           Nacer
         </Link>
@@ -89,6 +155,7 @@ export default function Header() {
           <button
             type="button"
             aria-label="Menu"
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
             className="flex h-6 w-6 flex-col items-center justify-center gap-1 md:hidden"
           >
